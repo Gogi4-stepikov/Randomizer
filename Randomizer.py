@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    with open('jobs.html', 'r', encoding='utf-8') as file:
+    with open('Randomizer_Web.html', 'r', encoding='utf-8') as file:
         return file.read()
 
 
