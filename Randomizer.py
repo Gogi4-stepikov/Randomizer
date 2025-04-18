@@ -31,5 +31,10 @@ def generator():
 def monetka():
     return render_template('monetka.html')
 
+@app.route('/registration')
+def registration():
+    return render_template('registration.html')
+
+
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
