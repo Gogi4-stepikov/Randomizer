@@ -1,83 +1,188 @@
 <!DOCTYPE html>
- <html lang="en">
- <head>
-     <meta charset="UTF-8">
-     <title>Randomizer</title>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
- </head>
- <body>
- <div class="container">
-         <div class="header">
-             <h1>Крути бочонок!</h1>
-             <p class="lead">Но перед началом ознакомтесь с отзывами</p>
-             <p class="under-lead">Нам доверяют все!</p>
-         </div>
-         <div class="top-buttons">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <button class="catalog-btn" id="catalogBtn">≡</button>
+    
+    <div class="catalog-menu" id="catalogMenu">
+        <button class="btn-close float-end" id="closeCatalogBtn"></button>
+        <h4 class="mb-4">Каталог</h4>
+        <a href="{{ url_for('fortune_wheel') }}" class="btn btn-outline-primary catalog-item mb-2">
+            <span class="emoji">🎡</span> Колесо фортуны
+        </a>
+        <a href="{{ url_for('dice') }}" class="btn btn-outline-primary catalog-item mb-2">
+            <span class="emoji">🎲</span> Игральные кости
+        </a>
+        <a href="{{ url_for('generator') }}" class="btn btn-outline-primary catalog-item mb-2">
+            <span class="emoji">🔢</span> Генератор чисел
+        </a>
+        <a href="{{ url_for('monetka') }}" class="btn btn-outline-primary catalog-item">
+            <span class="emoji">💰</span> Монетка
+        </a>
+    </div>
+    
+    <div class="catalog-overlay" id="catalogOverlay"></div>
+
+    <div class="container">
+        <div class="top-buttons">
             {% if 'email' in session %}
-                <span class="navbar-text mr-3">Привет, {{ session['name'] }}</span>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger top-right-button">Выйти</a>
+                <span class="navbar-text me-3">Привет, {{ session['name'] }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Выйти</a>
             {% else %}
-                <a href="{{ url_for('registration') }}" class="btn btn-primary mr-2">Регистрация</a>
+                <a href="{{ url_for('registration') }}" class="btn btn-primary me-2">Регистрация</a>
                 <a href="{{ url_for('authorization') }}" class="btn btn-outline-primary">Войти</a>
             {% endif %}
         </div>
-         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-             <div class="col">
-                 <div class="card border-info mb-3">
-                     <img src="https://cepia.ru/images/u/pages/1197/mops-14.jpg" class="card-img-top">
-                     <div class="card-body">
-                         <h5 class="card-title">Дмитрий Шемякин</h5>
-                         <p class="card-text">Колесо фортуны подкручивают!⭐☆☆☆☆</p>
-                         <a href="{{ url_for('fortune_wheel') }}" class="btn btn-primary">Колесо фортуны</a>
-                     </div>
-                     <div class="card-footer">
-                         <small class="text-body-secondary">🎡</small>
-                     </div>
-                 </div>
-             </div>
-             <div class="col">
-                 <div class="card border-info mb-3">
-                     <img src="https://cepia.ru/images/u/pages/1197/mops-14.jpg" class="card-img-top">
-                     <div class="card-body">
-                         <h5 class="card-title">Степаков Георгий</h5>
-                         <p class="card-text">Руки бы автору оторвал за такое!⭐⭐☆☆☆</p>
-                         <a href="{{ url_for('dice') }}" class="btn btn-primary">Игральные кости</a>
-                     </div>
-                     <div class="card-footer">
-                         <small class="text-body-secondary">🎲</small>
-                     </div>
-                 </div>
-             </div>
-             <div class="col">
-                 <div class="card border-info mb-3">
-                     <img src="https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/H2UDI3HXXII6PM2KXBLCNLZU54.jpg" class="card-img-top">
-                     <div class="card-body">
-                         <h5 class="card-title">Александр Новожилов</h5>
-                         <p class="card-text">Мой комп взорвался, спасибо!⭐☆☆☆☆</p>
-                         <a href="{{ url_for('generator') }}" class="btn btn-primary">Генератор чисел</a>
-                     </div>
-                     <div class="card-footer">
-                         <small class="text-body-secondary">🔢</small>
-                     </div>
-                 </div>
-             </div>
-             <div class="col">
-                 <div class="card border-info mb-3">
-                     <img src="https://cepia.ru/images/u/pages/1197/mops-14.jpg" class="card-img-top">
-                     <div class="card-body">
-                         <h5 class="card-title">Мопс?!</h5>
-                         <p class="card-text">Гав гав гав гав гав ТЯФ!⭐⭐⭐⭐⭐</p>
-                         <a href="{{ url_for('monetka') }}" class="btn btn-primary">Монетка</a>
-                     </div>
-                     <div class="card-footer">
-                         <small class="text-body-secondary">💰</small>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.min.js" integrity="sha384-VQqxDN0EQCkWoxt/0vsQvZswzTHUVOImccYmSyhJTp7kGtPed0Qcx8rK9h9YEgx+" crossorigin="anonymous"></script>
- </div>
- </body>
- </html>
+        
+        <div class="header">
+            <h1 class="display-4">Крути бочонок!</h1>
+            <p class="lead">Но перед началом ознакомтесь с отзывами</p>
+            <p class="text-muted">Нам доверяют все!</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            <div class="col">
+                <div class="card border-info h-100 review-card">
+                    <img src="https://avatars.mds.yandex.net/i?id=60d5d49026bdd48d1cf2ca5a2f9f3f30_l-5906106-images-thumbs&n=13" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Дмитрий Шемякин</h5>
+                        <p class="card-text">Колесо фортуны подкручивают!⭐☆☆☆☆</p>
+                        <a href="{{ url_for('fortune_wheel') }}" class="btn btn-primary">Колесо фортуны</a>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-body-secondary">🎡</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card border-info h-100 review-card">
+                    <img src="https://www.vwl4.wi.tu-darmstadt.de/media/vwl4/forschung_3/games-dice-4725932_1280_1300x0.jpg" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Степаков Георгий</h5>
+                        <p class="card-text">Руки бы автору оторвал за такое!⭐⭐☆☆☆</p>
+                        <a href="{{ url_for('dice') }}" class="btn btn-primary">Игральные кости</a>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-body-secondary">🎲</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card border-info h-100 review-card">
+                    <img src="https://ladyreka.ru/wp-content/uploads/2019/01/2.jpg" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Александр Новожилов</h5>
+                        <p class="card-text">Мой комп взорвался, спасибо!⭐☆☆☆☆</p>
+                        <a href="{{ url_for('generator') }}" class="btn btn-primary">Генератор чисел</a>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-body-secondary">🔢</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card border-info h-100 review-card">
+                    <img src="https://cepia.ru/images/u/pages/1197/mops-14.jpg" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Мопс?!</h5>
+                        <p class="card-text">Гав гав гав гав гав ТЯФ!⭐⭐⭐⭐⭐</p>
+                        <a href="{{ url_for('monetka') }}" class="btn btn-primary">Монетка</a>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-body-secondary">💰</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-section bg-light rounded-4 p-4 mb-5">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="display-5 mb-3">Что умеет наш рандомайзер?</h2>
+                    <p class="lead text-muted">Все инструменты для принятия случайных решений в одном месте</p>
+                </div>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="feature-box bg-white p-4 rounded-3">
+                        <h3><span class="badge bg-primary me-2">1</span> Крутить баранку</h3>
+                        <p class="fs-5">Наше колесо фортуны поможет вам принять сложное решение или просто добавить элемент случайности в вашу жизнь. Просто добавьте свои варианты и крутите барабан - пусть судьба решит за вас!</p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/987/987357.png" alt="Колесо фортуны" class="img-fluid feature-img">
+                </div>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 order-md-2 mb-4 mb-md-0">
+                    <div class="feature-box bg-white p-4 rounded-3">
+                        <h3><span class="badge bg-primary me-2">2</span> Генерировать числа</h3>
+                        <p class="fs-5">Нужно случайное число в заданном диапазоне? Наш генератор чисел создан для этого! Идеально подходит для лотерей, розыгрышей или любых других ситуаций, где требуется случайное число.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 order-md-1 text-center">
+                    <img src="https://www.clipartmax.com/png/full/190-1907843_number-one-comments-new-idea.png" alt="Генератор чисел" class="img-fluid feature-img">
+                </div>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="feature-box bg-white p-4 rounded-3">
+                        <h3><span class="badge bg-primary me-2">3</span> Бросать игральные кости</h3>
+                        <p class="fs-5">Виртуальные игральные кости для настольных игр, принятия решений или просто для веселья. Выбирайте количество кубиков и граней - мы реализовали все варианты!</p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="https://img.icons8.com/color/480/000000/dice.png" alt="Игральные кости" class="img-fluid feature-img">
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 order-md-2 mb-4 mb-md-0">
+                    <div class="feature-box bg-white p-4 rounded-3">
+                        <h3><span class="badge bg-primary me-2">4</span> Кидать монетку</h3>
+                        <p class="fs-5">Когда нужно принять простое решение "или-или", наша виртуальная монетка - идеальный вариант. Орёл или решка? Пусть случай решит за вас одним лёгким кликом!</p>
+                    </div>
+                </div>
+                <div class="col-md-6 order-md-1 text-center">
+                    <img src="https://img.icons8.com/color/480/000000/coins.png" alt="Монетка" class="img-fluid feature-img">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const catalogBtn = document.getElementById('catalogBtn');
+        const closeCatalogBtn = document.getElementById('closeCatalogBtn');
+        const catalogMenu = document.getElementById('catalogMenu');
+        const catalogOverlay = document.getElementById('catalogOverlay');
+        const body = document.body;
+        function openCatalog() {
+            catalogMenu.classList.add('show');
+            catalogOverlay.classList.add('show');
+            body.classList.add('catalog-open');
+            catalogBtn.classList.add('hidden');
+        }
+        function closeCatalog() {
+            catalogMenu.classList.remove('show');
+            catalogOverlay.classList.remove('show');
+            body.classList.remove('catalog-open');
+            catalogBtn.classList.remove('hidden');
+        }
+        catalogBtn.addEventListener('click', openCatalog);
+        closeCatalogBtn.addEventListener('click', closeCatalog);
+        catalogOverlay.addEventListener('click', closeCatalog);
+        document.querySelectorAll('.catalog-item').forEach(item => {
+            item.addEventListener('click', closeCatalog);
+        });
+    </script>
+</body>
+</html>
