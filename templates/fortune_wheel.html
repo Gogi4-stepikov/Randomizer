@@ -14,6 +14,8 @@
             {% if 'name' in session %}
                 <span class="me-2">Играет: {{ session['name'] }}</span>
             {% endif %}
+            <a href="{{ url_for('home') }}" class="back-button" title="Вернуться на главную">
+                <img src="https://cdn-icons-png.flaticon.com/512/709/709624.png" alt="Назад">
             <a href="{{ url_for('logout') }}" class="btn btn-outline-danger top-right-button">Выйти</a>
         </div>
     </div>
