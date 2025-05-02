@@ -1,23 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Randomizer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Монетка</h1>
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger top-right-button">Выйти</a>
-        {% if 'name' in session %}
-            <p>Играет: {{ session['name'] }}</p>
-        {% endif %}
+        <h1>Орёл и решка</h1>
+        <div>
+            {% if 'name' in session %}
+                <span class="me-2">Играет: {{ session['name'] }}</span>
+            {% endif %}
+            <a href="{{ url_for('home') }}" class="back-button" title="Вернуться на главную">
+                <img src="https://cdn-icons-png.flaticon.com/512/709/709624.png" alt="Назад">
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger top-right-button">Выйти</a>
+        </div>
     </div>
-<div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.min.js" integrity="sha384-VQqxDN0EQCkWoxt/0vsQvZswzTHUVOImccYmSyhJTp7kGtPed0Qcx8rK9h9YEgx+" crossorigin="anonymous"></script>
+
+    <div class="denomination-selector">
+        <div class="denomination-btn active" data-value="1ruble">
+            <img src="https://cdn.monetnik.ru/storage/market-lot/26/10/645026/2270398_mainViewLot_2x.jpg" alt="1 рубль" class="denomination-img" title="1 рубль">
+        </div>
+        <div class="denomination-btn" data-value="2rubles">
+            <img src="https://imperial-mag.ru/upload/shop_3/1/4/7/item_14711/item_image14711.jpg" alt="2 рубля" class="denomination-img" title="2 рубля">
+        </div>
+        <div class="denomination-btn" data-value="5rubles">
+            <img src="https://filtorg.ru/images/thumbnails/2180/1907/detailed/65/539889_big.jpg" alt="5 рублей" class="denomination-img" title="5 рублей">
+        </div>
+        <div class="denomination-btn" data-value="10rubles">
+            <img src="https://cdn.monetnik.ru/storage/market-lot/96/22/322396/1173467_big.jpg" alt="10 рублей" class="denomination-img" title="10 рублей">
+        </div>
+    </div>
+
+    <div class="coin-container">
+        <img id="coinImage" src="https://cdn.monetnik.ru/storage/market-lot/26/10/645026/2270398_mainViewLot_2x.jpg" alt="Монетка" class="coin-image">
+        <div id="resultText" class="result-text"></div>
+        <button id="tossBtn" class="btn btn-primary btn-toss">Подбросить</button>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const coinImage = document.getElementById('coinImage');
+        const tossBtn = document.getElementById('tossBtn');
+        const resultText = document.getElementById('resultText');
+        const denominationBtns = document.querySelectorAll('.denomination-btn');
+        
+        let currentDenomination = '1ruble';
+        const coinImages = {
+            '1ruble': {
+                heads: 'https://filtorg.ru/images/thumbnails/1167/1021/detailed/53/1-rub-sng-2.jpg',
+                tails: 'https://cdn.monetnik.ru/storage/market-lot/26/10/645026/2270398_mainViewLot_2x.jpg'
+            },
+            '2rubles': {
+                heads: 'https://avatars.mds.yandex.net/i?id=e4a5cbd25ca2b455d872dcc3c2037f37_l-5220417-images-thumbs&n=13',
+                tails: 'https://imperial-mag.ru/upload/shop_3/1/4/7/item_14711/item_image14711.jpg'
+            },
+            '5rubles': {
+                heads: 'https://coinsmoscow.ru/published/publicdata/COINSSR2WEBASYSTT/attachments/SC/products_pictures/20094-IMG_5042_enl.jpg',
+                tails: 'https://filtorg.ru/images/thumbnails/2180/1907/detailed/65/539889_big.jpg'
+            },
+            '10rubles': {
+                heads: 'https://cache3.youla.io/files/images/780_780/5a/e4/5ae49cb5d67750b47201d093.jpg',
+                tails: 'https://cdn.monetnik.ru/storage/market-lot/96/22/322396/1173467_big.jpg'
+            }
+        };
+
+        denominationBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                denominationBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentDenomination = this.dataset.value;
+                coinImage.src = coinImages[currentDenomination].heads;
+                resultText.textContent = '';
+            });
+        });
+
+        tossBtn.addEventListener('click', function() {
+            tossBtn.disabled = true;
+            resultText.textContent = '';
+            coinImage.classList.add('coin-spinning');
+            const isHeads = Math.random() < 0.5;
+            const result = isHeads ? 'heads' : 'tails';
+            
+            setTimeout(() => {
+                coinImage.classList.remove('coin-spinning');
+                coinImage.src = coinImages[currentDenomination][result];
+                
+                if (isHeads) {
+                    resultText.textContent = 'Орёл!';
+                    resultText.className = 'result-text heads';
+                } else {
+                    resultText.textContent = 'Решка!';
+                    resultText.className = 'result-text tails';
+                }
+                
+                tossBtn.disabled = false;
+            }, 1500);
+        });
+    });
+</script>
 </body>
 </html>
