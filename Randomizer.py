@@ -1,25 +1,34 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, make_response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 import math
 import random
 from io import BytesIO
 import base64
 import pygame
-import sys
+from datetime import datetime
 
-pygame.init()
-pygame.font.init()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = 'mega_secret_key_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
+
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 
+
 class User(db.Model):
+    __tablename__ = 'users'
+    __table_args__ = {'extend_existing': True}
+    
     id = db.Column(db.Integer, primary_key=True)
     surname = db.Column(db.String(100))
     name = db.Column(db.String(100), nullable=False)
@@ -27,6 +36,11 @@ class User(db.Model):
     gender = db.Column(db.String(20))
     source = db.Column(db.String(100))
     password = db.Column(db.String(200), nullable=False)
+    avatar = db.Column(db.String(100))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 wheel_options = ["Приз 1", "Приз 2", "Приз 3", "Приз 4"]
 wheel_angle = 0
@@ -167,12 +181,46 @@ def monetka():
         return redirect(url_for('authorization'))
     return render_template('monetka.html')
 
-@app.route('/generator')
+@app.route('/generator', methods=['GET', 'POST'])
 def generator():
     if 'email' not in session:
         flash('Пожалуйста, войдите для доступа к этой странице')
         return redirect(url_for('authorization'))
-    return render_template('generator.html')
+    if 'history' not in session:
+        session['history'] = []
+    
+    if request.method == 'POST':
+        try:
+            min_val = int(request.form['minValue'])
+            max_val = int(request.form['maxValue'])
+            
+            if min_val >= max_val:
+                flash('Минимальное значение должно быть меньше максимального!', 'danger')
+                return redirect(url_for('generator'))
+            
+            result = random.randint(min_val, max_val)
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            session['history'] = [{
+                'number': result,
+                'min': min_val,
+                'max': max_val,
+                'time': timestamp
+            }] + session['history'][:9]
+            
+            return render_template('generator.html', 
+                                result=result,
+                                min_value=min_val,
+                                max_value=max_val,
+                                history=session['history'])
+            
+        except ValueError:
+            flash('Пожалуйста, введите корректные числа!', 'danger')
+            return redirect(url_for('generator'))
+    
+    return render_template('generator.html', 
+                         min_value=1,
+                         max_value=100,
+                         history=session.get('history', []))
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
@@ -184,6 +232,13 @@ def registration():
         source = request.form.get('profession')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        avatar = None
+        if 'avatar' in request.files:
+            file = request.files['avatar']
+            if file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(f"{email}_{file.filename}")
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                avatar = filename
         
         if password != confirm_password:
             flash('Пароли не совпадают')
@@ -201,10 +256,17 @@ def registration():
                 email=email,
                 gender=gender,
                 source=source,
-                password=hashed_password
+                password=hashed_password,
+                avatar=avatar
             )
             db.session.add(new_user)
             db.session.commit()
+            
+            session['email'] = email
+            session['name'] = name
+            if avatar:
+                session['avatar'] = avatar
+
             flash('Регистрация прошла успешно! Теперь вы можете войти.')
             return redirect(url_for('authorization'))
         except Exception as e:
@@ -224,6 +286,8 @@ def authorization():
         if user and check_password_hash(user.password, password):
             session['email'] = email
             session['name'] = user.name
+            if user.avatar:
+                session['avatar'] = user.avatar
             flash(f'Добро пожаловать, {user.name}!')
             return redirect(url_for('home'))
         else:
