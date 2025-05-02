@@ -32,8 +32,22 @@
     <div class="container">
         <div class="top-buttons">
             {% if 'email' in session %}
-                <span class="navbar-text me-3">Привет, {{ session['name'] }}</span>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Выйти</a>
+                <div class="user-info d-flex align-items-center">
+                    {% if session.get('avatar') %}
+                        <img src="{{ url_for('static', filename='uploads/' + session['avatar']) }}" 
+                             class="user-avatar rounded-circle me-2" 
+                             width="40" 
+                             height="40" 
+                             alt="Аватар">
+                    {% else %}
+                        <div class="user-avatar rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" 
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-person" style="color: white; font-size: 20px;"></i>
+                        </div>
+                    {% endif %}
+                    <span class="navbar-text me-3">Привет, {{ session['name'] }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Выйти</a>
+                </div>
             {% else %}
                 <a href="{{ url_for('registration') }}" class="btn btn-primary me-2">Регистрация</a>
                 <a href="{{ url_for('authorization') }}" class="btn btn-outline-primary">Войти</a>
@@ -137,11 +151,11 @@
                 <div class="col-md-6 mb-4 mb-md-0">
                     <div class="feature-box bg-white p-4 rounded-3">
                         <h3><span class="badge bg-primary me-2">3</span> Бросать игральные кости</h3>
-                        <p class="fs-5">Виртуальные игральные кости для настольных игр, принятия решений или просто для веселья. Выбирайте количество кубиков и граней - мы реализовали все варианты!</p>
+                        <p class="fs-5">Виртуальные игральные кости для настольных игр, принятия решений или просто для веселья.</p>
                     </div>
                 </div>
                 <div class="col-md-6 text-center">
-                    <img src="https://img.icons8.com/color/480/000000/dice.png" alt="Игральные кости" class="img-fluid feature-img">
+                    <img src="https://d4.alternativeto.net/2XaDfqxjMx71uzbU5wROcAUvTEh7p9v6wZMLKgXjj_U/rs:fit:70:70:0/g:ce:0:0/exar:1/YWJzOi8vZGlzdC9pY29ucy93aXJlc3BhY2VfMjM5NjgyLnN2Zw.svg" alt="Игральные кости" class="img-fluid feature-img">
                 </div>
             </div>
             
@@ -153,7 +167,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 order-md-1 text-center">
-                    <img src="https://img.icons8.com/color/480/000000/coins.png" alt="Монетка" class="img-fluid feature-img">
+                    <img src="https://cdn0.iconfinder.com/data/icons/seo-digital-marketing-vol-2/48/44-1024.png" alt="Монетка" class="img-fluid feature-img">
                 </div>
             </div>
         </div>
