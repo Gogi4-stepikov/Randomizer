@@ -11,13 +11,24 @@
     <div class="form-container">
         <h1>Регистрация</h1>
         {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-        <form method="POST">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Аватар (необязательно)</label>
+                <div class="avatar-upload">
+                    <div class="avatar-placeholder" id="avatarPlaceholder">
+                        <i>👤</i>
+                    </div>
+                    <img id="avatarPreview" class="avatar-preview" src="#" alt="Предпросмотр аватара">
+                    <input type="file" id="avatarInput" name="avatar" accept="image/*" class="form-control">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Фамилия</label>
                 <input type="text" name="surname" required>
@@ -70,13 +81,26 @@
         </form>
         {% if submitted %}
         <div class="success-message">
-            <h3>Вы упешно зарегистрированы!</h3>
+            <h3>Вы успешно зарегистрированы!</h3>
         </div>
         {% endif %}
     </div>
-<div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.min.js" integrity="sha384-VQqxDN0EQCkWoxt/0vsQvZswzTHUVOImccYmSyhJTp7kGtPed0Qcx8rK9h9YEgx+" crossorigin="anonymous"></script>
-</div>
+
+    <script>
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('avatarPlaceholder').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
