@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика источников</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Откуда пользователи узнали о нас</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Источник</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for source, count in stats.items() %}
+                <tr>
+                    <td>{{ source }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">На главную</a>
+    </div>
+</body>
+</html>

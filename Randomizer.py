@@ -24,6 +24,40 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 
+STATS_DIR = 'stats'
+os.makedirs(STATS_DIR, exist_ok=True)
+
+def update_gender_stats(gender):
+    stats_file = os.path.join(STATS_DIR, 'gender_stats.txt')
+    stats = {'мужской': 0, 'женский': 0}
+    
+    if os.path.exists(stats_file):
+        with open(stats_file, 'r') as f:
+            for line in f:
+                g, count = line.strip().split(':')
+                stats[g] = int(count)
+    
+    stats[gender] += 1
+    
+    with open(stats_file, 'w') as f:
+        for g, count in stats.items():
+            f.write(f"{g}:{count}\n")
+
+def update_source_stats(source):
+    stats_file = os.path.join(STATS_DIR, 'source_stats.txt')
+    stats = {}
+    
+    if os.path.exists(stats_file):
+        with open(stats_file, 'r') as f:
+            for line in f:
+                s, count = line.strip().split(':')
+                stats[s] = int(count)
+    
+    stats[source] = stats.get(source, 0) + 1
+    
+    with open(stats_file, 'w') as f:
+        for s, count in stats.items():
+            f.write(f"{s}:{count}\n")
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -261,6 +295,8 @@ def registration():
             )
             db.session.add(new_user)
             db.session.commit()
+            update_gender_stats(gender)
+            update_source_stats(source)
             
             session['email'] = email
             session['name'] = name
@@ -301,6 +337,32 @@ def logout():
     session.pop('name', None)
     flash('Вы успешно вышли из системы')
     return redirect(url_for('home'))
+
+@app.route('/stats/gender')
+def gender_stats():
+    stats_file = os.path.join(STATS_DIR, 'gender_stats.txt')
+    stats = {'мужской': 0, 'женский': 0}
+    
+    if os.path.exists(stats_file):
+        with open(stats_file, 'r') as f:
+            for line in f:
+                g, count = line.strip().split(':')
+                stats[g] = int(count)
+    
+    return render_template('gender_stats.html', stats=stats)
+
+@app.route('/stats/source')
+def source_stats():
+    stats_file = os.path.join(STATS_DIR, 'source_stats.txt')
+    stats = {}
+    
+    if os.path.exists(stats_file):
+        with open(stats_file, 'r') as f:
+            for line in f:
+                s, count = line.strip().split(':')
+                stats[s] = int(count)
+    
+    return render_template('source_stats.html', stats=stats)
 
 if __name__ == '__main__':
     with app.app_context():

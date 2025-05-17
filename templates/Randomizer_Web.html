@@ -25,6 +25,12 @@
         <a href="{{ url_for('monetka') }}" class="btn btn-outline-primary catalog-item">
             <span class="emoji">💰</span> Монетка
         </a>
+        <a href="{{ url_for('gender_stats') }}" class="btn btn-outline-secondary catalog-item mb-2">
+            Статистика по полу
+        </a>
+        <a href="{{ url_for('source_stats') }}" class="btn btn-outline-secondary catalog-item">
+            Статистика источников
+        </a>
     </div>
     
     <div class="catalog-overlay" id="catalogOverlay"></div>
@@ -40,12 +46,8 @@
                              height="40" 
                              alt="Аватар">
                     {% else %}
-                        <div class="user-avatar rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" 
-                             style="width: 40px; height: 40px;">
-                            <i class="bi bi-person" style="color: white; font-size: 20px;"></i>
-                        </div>
+                        <span class="navbar-text me-3">Привет, {{ session['name'] }}</span>
                     {% endif %}
-                    <span class="navbar-text me-3">Привет, {{ session['name'] }}</span>
                     <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Выйти</a>
                 </div>
             {% else %}
